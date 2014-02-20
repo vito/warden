@@ -98,3 +98,13 @@ then
   useradd -mU -u $user_uid -s /bin/bash vcap
 fi
 EOS
+
+cat > mnt/etc/sudoers <<EOS
+Defaults        env_reset
+
+root  ALL=(ALL) ALL
+
+%sudo ALL=(ALL) ALL
+
+vcap  ALL=(NOPASSWD:) ALL
+EOS

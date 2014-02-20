@@ -142,15 +142,18 @@ int msg_user_export(msg__user_t *u, struct passwd *pw) {
 
   int rv;
 
-  rv = setgid(pw->pw_gid);
-  if (rv == -1) {
-    return rv;
-  }
+  /*printf("setgid: %d\n", pw->pw_gid);*/
 
-  rv = setuid(pw->pw_uid);
-  if (rv == -1) {
-    return rv;
-  }
+  /*rv = setgid(pw->pw_gid);*/
+  /*if (rv == -1) {*/
+    /*return rv;*/
+  /*}*/
+
+  /*printf("setuid: %d\n", pw->pw_uid);*/
+  /*rv = setuid(pw->pw_uid);*/
+  /*if (rv == -1) {*/
+    /*return rv;*/
+  /*}*/
 
   return 0;
 }

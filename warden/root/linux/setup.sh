@@ -5,6 +5,8 @@ set -o nounset
 set -o errexit
 shopt -s nullglob
 
+set -x
+
 cd $(dirname "${0}")
 
 # Check if the old mount point exists, and if so clean it up

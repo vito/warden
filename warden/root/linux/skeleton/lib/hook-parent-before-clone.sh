@@ -12,4 +12,5 @@ source ./lib/common.sh
 setup_fs
 
 cp bin/wshd mnt/sbin/wshd
+chown $user_uid:$user_uid mnt/sbin/wshd
 chmod 700 mnt/sbin/wshd

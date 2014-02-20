@@ -1,5 +1,7 @@
 #!/bin/bash
 
+set -x
+
 [ -f etc/config ] && source etc/config
 
 function get_distrib_codename() {

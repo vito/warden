@@ -46,6 +46,9 @@ struct wshd_s {
   /* File descriptor of listening socket */
   int fd;
 
+  /* User to run as */
+  int uid;
+
   barrier_t barrier_parent;
   barrier_t barrier_child;
 
@@ -710,7 +713,27 @@ int child_run(void *data) {
   rv = run(pivoted_lib_path, "hook-child-after-pivot.sh");
   assert(rv == 0);
 
+  rv = mount_umount_pivoted_root("/mnt");
+  if (rv == -1) {
+    exit(1);
+  }
+
+  /*rv = setgid(w->uid);*/
+  /*assert(rv == 0);*/
+
+  /*rv = setuid(w->uid);*/
+  /*assert(rv == 0);*/
+
   child_save_to_shm(w);
+
+  /*rv = unshare(CLONE_NEWUSER);*/
+  /*assert(rv == 0);*/
+
+  rv = unshare(CLONE_NEWNS);
+  assert(rv == 0);
+
+  rv = unshare(CLONE_NEWUTS);
+  assert(rv == 0);
 
   execl("/sbin/wshd", "/sbin/wshd", "--continue", NULL);
   perror("exec");
@@ -729,11 +752,6 @@ int child_continue(int argc, char **argv) {
 
   if (strlen(w->title) > 0) {
     setproctitle(argv, w->title);
-  }
-
-  rv = mount_umount_pivoted_root("/mnt");
-  if (rv == -1) {
-    exit(1);
   }
 
   /* Detach this process from its original group */
@@ -800,6 +818,8 @@ int parent_run(wshd_t *w) {
 
   w->fd = un_listen(path);
 
+  w->uid = atoi(getenv("user_uid"));
+
   rv = barrier_open(&w->barrier_parent);
   assert(rv == 0);
 
@@ -833,6 +853,9 @@ int parent_run(wshd_t *w) {
     fprintf(stderr, "Error waiting for acknowledgement from child process\n");
     exit(1);
   }
+
+  rv = run(w->lib_path, "hook-parent-after-user-namespace.sh");
+  assert(rv == 0);
 
   return 0;
 }
